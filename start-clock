@@ -1,0 +1,3 @@
+#!/bin/bash
+
+emacs23 -name emacs -fn '-*-futura-*-*-*--160-*-*-*-*-*-*-*' -geometry 20x10+0+0 -l ~/src/clock.el/clock.el -f setup-clock -fg black 
