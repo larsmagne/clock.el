@@ -44,9 +44,9 @@
 
     (when clock-temperatures
       (goto-char (point-min))
-      (forward-line 2)
+      (forward-line 3)
       (delete-region (point) (line-end-position))
-      (insert (format "%15.1f°C" (cadr clock-temperatures)))
+      (insert (format "%.1fÂ°" (cadr clock-temperatures)))
       (put-text-property (point) (line-beginning-position)
 			 'face 'clock-temperature-face))))
 
@@ -70,17 +70,17 @@
 
 (defface clock-alarm-face
   '((((class color))
-     (:foreground "#404040" :italic nil)))
+     (:foreground "#202020" :italic nil)))
   "Alarm")
 
 (defface clock-temperature-face
   '((((class color))
-     (:foreground "#404040" :italic nil)))
+     (:foreground "#202020" :italic nil)))
   "Alarm")
 
 (defface clock-clock-face
   '((((class color))
-     (:foreground "#a0a0a0" :italic nil)))
+     (:foreground "#404040" :italic nil)))
   "Alarm")
 
 (defvar clock-mode-map nil)
