@@ -76,12 +76,12 @@
 (defface clock-temperature-face
   '((((class color))
      (:foreground "#202020" :italic nil)))
-  "Alarm")
+  "Temperature")
 
 (defface clock-clock-face
   '((((class color))
-     (:foreground "#404040" :italic nil)))
-  "Alarm")
+     (:foreground "#303030" :italic nil)))
+  "Clock")
 
 (defvar clock-mode-map nil)
 (unless clock-mode-map
