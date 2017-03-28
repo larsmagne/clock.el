@@ -70,12 +70,12 @@
 
 (defface clock-alarm-face
   '((((class color))
-     (:foreground "#202020" :italic nil)))
+     (:foreground "#303030" :italic nil)))
   "Alarm")
 
 (defface clock-temperature-face
   '((((class color))
-     (:foreground "#202020" :italic nil)))
+     (:foreground "#303030" :italic nil)))
   "Temperature")
 
 (defface clock-clock-face
