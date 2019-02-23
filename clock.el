@@ -208,9 +208,9 @@
     (svg-rectangle svg 0 0 width height
 		   :fill "#000000")
     (svg-text svg time
-	      :x 0
-	      :y 450
-	      :font-size 500
+	      :x 50
+	      :y 580
+	      :font-size 680
 	      :font-weight "bold"
 	      :fill clock-clock-face
     	      :font-family "futura")
@@ -224,7 +224,7 @@
     	      :font-family "futura")
     (svg-text svg alarm
 	      :x (/ width 2)
-	      :y (+ (/ height 2) 150)
+	      :y (+ (/ height 2) 200)
 	      :font-size 300
 	      :text-anchor "middle"
 	      :font-weight "bold"
