@@ -70,17 +70,17 @@
 
 (defface clock-alarm-face
   '((((class color))
-     (:foreground "#303030" :italic nil)))
+     (:foreground "#ffffff" :italic nil)))
   "Alarm")
 
 (defface clock-temperature-face
   '((((class color))
-     (:foreground "#303030" :italic nil)))
+     (:foreground "#ffffff" :italic nil)))
   "Temperature")
 
 (defface clock-clock-face
   '((((class color))
-     (:foreground "#303030" :italic nil)))
+     (:foreground "#ffffff" :italic nil)))
   "Clock")
 
 (defvar clock-mode-map nil)
