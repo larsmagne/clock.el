@@ -28,6 +28,7 @@
 ;;; Code:
 
 (require 'cl)
+(require 'svg)
 
 (defvar clock-temperatures nil)
 (defvar clock-temperature-poll 0)
@@ -214,6 +215,35 @@
     (goto-line (point-min))
     (forward-line 1)
     (delete-region (point) (line-end-position))))
+
+(defun clock-make-svg (time alarm temperature width height)
+  (let ((svg (svg-create width height)))
+    (svg-rectangle svg 0 0 width height
+		   :fill "#000000")
+    (svg-text svg time
+	      :x 0
+	      :y 100
+	      :font-size 100
+	      :font-weight "bold"
+	      :fill "white"
+    	      :font-family "futura")
+    (svg-text svg temperature
+	      :x 500
+	      :y 400
+	      :font-size 100
+	      :text-anchor "end"
+	      :font-weight "bold"
+	      :fill "white"
+    	      :font-family "futura")
+    (svg-text svg alarm
+	      :x (/ width 2)
+	      :y (+ (/ height 2) 50)
+	      :font-size 100
+	      :text-anchor "middle"
+	      :font-weight "bold"
+	      :fill "white"
+    	      :font-family "futura")
+    (insert-image (svg-image svg))))
 
 (provide 'clock)
 
