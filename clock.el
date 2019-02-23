@@ -32,24 +32,18 @@
 
 (defvar clock-temperatures nil)
 (defvar clock-temperature-poll 0)
+(defvar clock-alarm-time "")
 
 (defun display-clock ()
   (save-excursion
-    (clock-update-temperatures)
-    (set-buffer (set-buffer (get-buffer-create "*clock*")))
-    (goto-char (point-min))
-    (delete-region (point) (line-end-position))
-    (insert (format-time-string "%H:%M"))
-    (put-text-property (point) (line-beginning-position)
-		       'face 'clock-clock-face)
-
-    (when clock-temperatures
-      (goto-char (point-min))
-      (forward-line 3)
-      (delete-region (point) (line-end-position))
-      (insert (format "%.1f°" (cadr clock-temperatures)))
-      (put-text-property (point) (line-beginning-position)
-			 'face 'clock-temperature-face))))
+    (erase-buffer)
+    (clock-make-svg (format-time-string "%H:%M")
+		    ;;clock-alarm-time
+		    "11:45"
+		    (if clock-temperatures
+			(format "%.1f°" (cadr clock-temperatures))
+		      "1.3°")
+		    2200 1650)))
 
 (defun clock-update-temperatures ()
   (when (zerop (mod clock-temperature-poll 30))
@@ -69,19 +63,13 @@
     (call-process "~/bin/get-temperatures" nil (current-buffer) nil)
     (mapcar #'string-to-number (split-string (buffer-string)))))
 
-(defface clock-alarm-face
-  '((((class color))
-     (:foreground "#ffffff" :italic nil)))
+(defvar clock-alarm-face "#ffffff"
   "Alarm")
 
-(defface clock-temperature-face
-  '((((class color))
-     (:foreground "#ffffff" :italic nil)))
+(defvar clock-temperature-face "#ffffff"
   "Temperature")
 
-(defface clock-clock-face
-  '((((class color))
-     (:foreground "#ffffff" :italic nil)))
+(defvar clock-clock-face "#ffffff"
   "Clock")
 
 (defvar clock-mode-map nil)
@@ -89,12 +77,18 @@
   (setq clock-mode-map (make-sparse-keymap))
   (suppress-keymap clock-mode-map)
   (define-key clock-mode-map "*" 'clock-set-alarm)
+  (define-key clock-mode-map "g" 'clock-reload)
   (define-key clock-mode-map "\r" 'clock-cancel-alarm)
   (define-key clock-mode-map "2" 'clock-decrease-volume)
   (define-key clock-mode-map "8" 'clock-increase-volume)
   (define-key clock-mode-map "0" 'clock-pause)
   (define-key clock-mode-map [(XF86Calculator)] 'clock-lights-on)
   (define-key clock-mode-map [(meta tab)] 'clock-lights-off))
+
+(defun clock-reload ()
+  (interactive)
+  (load "~/src/clock.el/clock.el")
+  (display-clock))
 
 (defun clock-lights-on ()
   (interactive)
@@ -131,7 +125,6 @@
       (server-start)))
   (switch-to-buffer (set-buffer (get-buffer-create "*clock*")))
   (erase-buffer)
-  (insert "\n\n\n\n\n")
   (clock-mode)
   (start-clock))
 
@@ -167,18 +160,12 @@
 	  (format "0%s:%s" (substring time 0 1) (substring time 1)))
 	 ((= (length time) 4)
 	  (format "%s:%s" (substring time 0 2) (substring time 2)))))
+  (setq clock-alarm-time time)
   (clock-cancel-alarm)
   (setq clock-alarm 
 	(run-at-time (clock-number-of-seconds-until time)
 		     nil #'clock-sound-alarm))
-  (save-excursion
-    (set-buffer (get-buffer-create "*clock*"))
-    (goto-line (point-min))
-    (forward-line 1)
-    (delete-region (point) (line-end-position))
-    (insert time)
-    (put-text-property (point) (line-beginning-position)
-		       'face 'clock-alarm-face)))
+  (display-clock))
 
 (defun clock-number-of-seconds-until (clock)
   (let ((seconds 0)
@@ -222,26 +209,26 @@
 		   :fill "#000000")
     (svg-text svg time
 	      :x 0
-	      :y 100
-	      :font-size 100
+	      :y 450
+	      :font-size 500
 	      :font-weight "bold"
-	      :fill "white"
+	      :fill clock-clock-face
     	      :font-family "futura")
     (svg-text svg temperature
-	      :x 500
-	      :y 400
-	      :font-size 100
+	      :x (- width 50)
+	      :y (- height 50)
+	      :font-size 500
 	      :text-anchor "end"
 	      :font-weight "bold"
-	      :fill "white"
+	      :fill clock-temperature-face
     	      :font-family "futura")
     (svg-text svg alarm
 	      :x (/ width 2)
-	      :y (+ (/ height 2) 50)
-	      :font-size 100
+	      :y (+ (/ height 2) 150)
+	      :font-size 300
 	      :text-anchor "middle"
 	      :font-weight "bold"
-	      :fill "white"
+	      :fill "#ffffff"
     	      :font-family "futura")
     (insert-image (svg-image svg))))
 
