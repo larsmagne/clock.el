@@ -29,21 +29,23 @@
 
 (require 'cl)
 (require 'svg)
+(require 'eval-server)
 
 (defvar clock-temperatures nil)
 (defvar clock-temperature-poll 0)
 (defvar clock-alarm-time "")
 
 (defun display-clock ()
-  (save-excursion
+  (clock-update-temperatures)
+  (with-current-buffer (get-buffer-create "*clock*")
     (erase-buffer)
     (clock-make-svg (format-time-string "%H:%M")
-		    ;;clock-alarm-time
-		    "11:45"
+		    (or "foo" clock-alarm-time)
 		    (if clock-temperatures
 			(format "%.1f°" (cadr clock-temperatures))
-		      "1.3°")
-		    2200 1650)))
+		      "no temp°")
+		    2200 1650)
+    (put-text-property (point-min) (point-max) 'keymap nil)))
 
 (defun clock-update-temperatures ()
   (when (zerop (mod clock-temperature-poll 30))
@@ -78,7 +80,10 @@
   (suppress-keymap clock-mode-map)
   (define-key clock-mode-map "*" 'clock-set-alarm)
   (define-key clock-mode-map "g" 'clock-reload)
-  (define-key clock-mode-map "\r" 'clock-cancel-alarm)
+  (define-key clock-mode-map "-" 'clock-reload)
+  (define-key clock-mode-map [backspace] 'clock-cancel-alarm)
+  (define-key clock-mode-map (kbd "TAB") 'clock-light-off)
+  (define-key clock-mode-map "\r" 'clock-light-on)
   (define-key clock-mode-map "2" 'clock-decrease-volume)
   (define-key clock-mode-map "8" 'clock-increase-volume)
   (define-key clock-mode-map "0" 'clock-pause)
@@ -118,7 +123,7 @@
 (defun setup-clock ()
   (fringe-mode 0)
   (let ((system (car (split-string (system-name) "[.]"))))
-    (when (member system '("clock"))
+    (when (member system '("moclock"))
       (setq server-use-tcp t
 	    server-host (system-name)
 	    server-name system)
@@ -160,8 +165,8 @@
 	  (format "0%s:%s" (substring time 0 1) (substring time 1)))
 	 ((= (length time) 4)
 	  (format "%s:%s" (substring time 0 2) (substring time 2)))))
-  (setq clock-alarm-time time)
   (clock-cancel-alarm)
+  (setq clock-alarm-time time)
   (setq clock-alarm 
 	(run-at-time (clock-number-of-seconds-until time)
 		     nil #'clock-sound-alarm))
@@ -192,16 +197,9 @@
   
 (defun clock-cancel-alarm ()
   (interactive)
+  (setq clock-alarm-time "")
   (ignore-errors
-    (cancel-timer clock-alarm))
-  (remove-alarm-text))
-
-(defun remove-alarm-text ()
-  (save-excursion
-    (set-buffer (get-buffer-create "*clock*"))
-    (goto-line (point-min))
-    (forward-line 1)
-    (delete-region (point) (line-end-position))))
+    (cancel-timer clock-alarm)))
 
 (defun clock-make-svg (time alarm temperature width height)
   (let ((svg (svg-create width height)))
@@ -223,14 +221,24 @@
 	      :fill clock-temperature-face
     	      :font-family "futura")
     (svg-text svg alarm
-	      :x (/ width 2)
-	      :y (+ (/ height 2) 200)
+	      :x (- width 200)
+	      :y (+ (/ height 2) -20)
 	      :font-size 300
-	      :text-anchor "middle"
+	      :text-anchor "end"
 	      :font-weight "bold"
 	      :fill "#ffffff"
     	      :font-family "futura")
     (insert-image (svg-image svg))))
+
+(defun clock-light-on ()
+  "Turn the light for the alarm clock monitor on."
+  (interactive)
+  (eval-at "lights" "moclock" 8700 '(tellstick-switch-id 46 on)))
+
+(defun clock-light-off ()
+  "Turn the light for the alarm clock monitor on."
+  (interactive)
+  (eval-at "lights" "moclock" 8700 '(tellstick-switch-id 46 off)))
 
 (provide 'clock)
 
