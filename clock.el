@@ -30,6 +30,7 @@
 (require 'cl)
 (require 'svg)
 (require 'eval-server)
+(require 'smalldisplay)
 
 (defvar clock-temperatures nil)
 (defvar clock-temperature-poll 0)
@@ -40,10 +41,11 @@
   (with-current-buffer (get-buffer-create "*clock*")
     (erase-buffer)
     (clock-make-svg (format-time-string "%H:%M")
-		    (or "foo" clock-alarm-time)
+		    clock-alarm-time
 		    (if clock-temperatures
 			(format "%.1f°" (cadr clock-temperatures))
 		      "no temp°")
+		    (smalldisplay--track)
 		    2200 1650)
     (put-text-property (point-min) (point-max) 'keymap nil)))
 
@@ -201,7 +203,7 @@
   (ignore-errors
     (cancel-timer clock-alarm)))
 
-(defun clock-make-svg (time alarm temperature width height)
+(defun clock-make-svg (time alarm temperature track width height)
   (let ((svg (svg-create width height)))
     (svg-rectangle svg 0 0 width height
 		   :fill "#000000")
@@ -225,6 +227,27 @@
 	      :y (+ (/ height 2) -20)
 	      :font-size 300
 	      :text-anchor "end"
+	      :font-weight "bold"
+	      :fill "#ffffff"
+    	      :font-family "futura")
+    (svg-text svg (car track)
+	      :x 200
+	      :y 900
+	      :font-size 150
+	      :font-weight "bold"
+	      :fill "#ffffff"
+    	      :font-family "futura")
+    (svg-text svg (cadr track)
+	      :x 200
+	      :y 1000
+	      :font-size 150
+	      :font-weight "bold"
+	      :fill "#ffffff"
+    	      :font-family "futura")
+    (svg-text svg (or (caddr track) "")
+	      :x 200
+	      :y 1100
+	      :font-size 150
 	      :font-weight "bold"
 	      :fill "#ffffff"
     	      :font-family "futura")
