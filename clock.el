@@ -230,27 +230,28 @@
 	      :font-weight "bold"
 	      :fill "#ffffff"
     	      :font-family "futura")
-    (svg-text svg (car track)
-	      :x 200
-	      :y 900
-	      :font-size 150
-	      :font-weight "bold"
-	      :fill "#ffffff"
-    	      :font-family "futura")
-    (svg-text svg (cadr track)
-	      :x 200
-	      :y 1000
-	      :font-size 150
-	      :font-weight "bold"
-	      :fill "#ffffff"
-    	      :font-family "futura")
-    (svg-text svg (or (caddr track) "")
-	      :x 200
-	      :y 1100
-	      :font-size 150
-	      :font-weight "bold"
-	      :fill "#ffffff"
-    	      :font-family "futura")
+    (when nil
+      (svg-text svg (car track)
+		:x 100
+		:y 1400
+		:font-size 150
+		:font-weight "bold"
+		:fill "#ffffff"
+    		:font-family "futura")
+      (svg-text svg (cadr track)
+		:x 100
+		:y 1500
+		:font-size 150
+		:font-weight "bold"
+		:fill "#ffffff"
+    		:font-family "futura")
+      (svg-text svg (or (caddr track) "")
+		:x 100
+		:y 1600
+		:font-size 150
+		:font-weight "bold"
+		:fill "#ffffff"
+    		:font-family "futura"))
     (insert-image (svg-image svg))))
 
 (defun clock-light-on ()
