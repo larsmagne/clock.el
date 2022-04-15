@@ -52,7 +52,7 @@
 (defun clock-update-temperatures ()
   (when (zerop (mod clock-temperature-poll 30))
     (setq clock-temperatures (clock-get-temperatures)))
-  (incf clock-temperature-poll))
+  (cl-incf clock-temperature-poll))
 
 (defvar clock-timer nil)
 
@@ -179,10 +179,10 @@
 	(now (time-to-seconds (current-time))))
     (while (not (string= clock (format-time-string "%H:%M"
 						   (seconds-to-time (+ seconds now)))))
-      (incf seconds 40))
+      (cl-incf seconds 40))
     (while (string= clock (format-time-string "%H:%M"
 					      (seconds-to-time (+ seconds now))))
-      (decf seconds))
+      (cl-decf seconds))
     seconds))
 
 (defun clock-emacsclient (command)
