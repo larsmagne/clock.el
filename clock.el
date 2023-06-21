@@ -43,7 +43,7 @@
     (clock-make-svg (format-time-string "%H:%M")
 		    clock-alarm-time
 		    (if clock-temperatures
-			(format "%.1f°" (cadr clock-temperatures))
+			(format "%.1f°" (car clock-temperatures))
 		      "no temp°")
 		    (smalldisplay--track)
 		    2200 1650)
@@ -63,9 +63,14 @@
 	(run-at-time 1 1 #'display-clock)))
 
 (defun clock-get-temperatures ()
-  (with-temp-buffer
-    (call-process "~/bin/get-temperatures" nil (current-buffer) nil)
-    (mapcar #'string-to-number (split-string (buffer-string)))))
+  (with-current-buffer (url-retrieve-synchronously
+			"http://rocket-sam/get-data.php")
+    (goto-char (point-min))
+    (search-forward "\n\n")
+    (prog1
+	(let ((data (json-read)))
+	  (list (string-to-number (cdr (assq 'temp data)))))
+      (kill-buffer (current-buffer)))))
 
 (defvar clock-alarm-face "#ffffff"
   "Alarm")
