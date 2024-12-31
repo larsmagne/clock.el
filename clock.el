@@ -220,7 +220,7 @@
     	      :font-family "futura")
     (svg-text svg
  	      ;; Use a smaller minus.
-	      (string-replace "-" "‐" temperature)
+	      (replace-regexp-in-string "-" "‐" temperature)
 	      :x (- width 50)
 	      :y (- height 50)
 	      :font-size 500
