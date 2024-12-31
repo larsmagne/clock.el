@@ -27,7 +27,6 @@
 
 ;;; Code:
 
-(require 'cl)
 (require 'svg)
 (require 'eval-server)
 (require 'smalldisplay)
@@ -219,7 +218,9 @@
 	      :font-weight "bold"
 	      :fill clock-clock-face
     	      :font-family "futura")
-    (svg-text svg temperature
+    (svg-text svg
+ 	      ;; Use a smaller minus.
+	      (string-replace "-" "‐" temperature)
 	      :x (- width 50)
 	      :y (- height 50)
 	      :font-size 500
